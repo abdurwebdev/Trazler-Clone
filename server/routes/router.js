@@ -70,11 +70,12 @@ router.post("/login", async (req, res) => {
 
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 3600000, // 1h
+      httpOnly: true,         // keeps it secure from JS access
+      secure: true,           // must be true for HTTPS (Vercel uses HTTPS)
+      sameSite: "none",       // important for cross-domain cookies
+      maxAge: 3600000,        // 1 hour
     });
+    
 
     res.status(200).json({ message: "Login Successful!" });
   } catch (error) {
