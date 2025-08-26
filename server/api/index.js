@@ -7,13 +7,20 @@ const { verifyToken } = require("./middlewares/authMiddleware");
 const router = require("./routes/router");
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("Server is running ✅");
+});
+
+console.log("✅ Backend booted on Vercel");
+
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`);
+  next();
+});
+
 
 // Connect DB
 db();
-
-app.get("/", (req, res) => {
-  res.send("API is working 🚀");
-});
 
 
 app.use(cookieParser());
