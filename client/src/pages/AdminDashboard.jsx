@@ -107,7 +107,7 @@ function AdminDashboard({ darkTheme }) {
         prevBlogs.filter((blog) => {
           const scheduledTime = new Date(blog.scheduledAt);
           if (now >= scheduledTime) {
-            toast.success(`✅ Blog "${blog.title}" has been published! 🎉`);
+            toast.success(`✅ Blog "${blog.title}" has been published! `);
             return false;
           }
           return true;
@@ -122,7 +122,7 @@ function AdminDashboard({ darkTheme }) {
     try {
       const content = getValues("content");
       if (!content) {
-        toast.error("❌ Please write some content first!");
+        toast.error("Please write some content first!");
         return;
       }
 
@@ -139,12 +139,12 @@ function AdminDashboard({ darkTheme }) {
       setGrammarSuggestions(data.matches);
 
       if (data.matches.length === 0) {
-        toast.success("✅ No grammar or spelling issues found!");
+        toast.success("No grammar or spelling issues found!");
       } else {
-        toast.info("⚡ Grammar suggestions found!");
+        toast.info("Grammar suggestions found!");
       }
     } catch (error) {
-      toast.error("❌ Grammar check failed!");
+      toast.error("Grammar check failed!");
     }
   };
 

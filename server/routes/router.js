@@ -13,13 +13,11 @@ const Category = require("../models/Category")
 
 router.post("/register", async (req, res) => {
   try {
-    console.log("📥 Incoming register request:", req.body);
 
     let { username, email, password, imageUrl } = registerValidator.parse(
       req.body
     );
 
-    console.log("✅ Validation passed:", { username, email });
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
@@ -30,8 +28,6 @@ router.post("/register", async (req, res) => {
       password: hash,
       imageUrl,
     });
-
-    console.log("✅ User created in DB:", newUser);
 
     res.status(201).json({ message: "Register Successful!" });
   } catch (error) {
@@ -46,23 +42,17 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    console.log("📥 Incoming login request:", req.body);
 
     let { email, password } = loginValidator.parse(req.body);
-    console.log("✅ Validation passed:", email);
 
     let user = await User.findOne({ email });
     if (!user) {
-      console.warn("❌ No user found with email:", email);
       return res.status(400).json({ message: "Login Failed" });
     }
-    console.log("✅ User found:", user.email);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("🔑 Password match:", isMatch);
 
     if (!isMatch) {
-      console.warn("❌ Incorrect password for:", email);
       return res.status(400).json({ message: "Login Failed" });
     }
 
@@ -78,7 +68,6 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    console.log("✅ JWT token created");
 
     res.cookie("token", token, {
       httpOnly: true,

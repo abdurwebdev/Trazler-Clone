@@ -16,8 +16,12 @@ function BlogCard({ darkTheme, card, setCard }) {
   useEffect(() => {
     const fetchBlogCards = async () => {
       try {
-        const blogs = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/blogcard`);
-        const activeBlogs = blogs.data.filter((item) => item.deletedPost === false);
+        const blogs = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/blogcard`
+        );
+        const activeBlogs = blogs.data.filter(
+          (item) => item.deletedPost === false
+        );
         setData(activeBlogs);
       } catch (err) {
         console.error("❌ Error fetching blog cards:", err);
@@ -47,7 +51,10 @@ function BlogCard({ darkTheme, card, setCard }) {
         setAdmin(res.data);
       } catch (err) {
         console.error("❌ Admin fetch error:", err);
-        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        if (
+          err.response &&
+          (err.response.status === 401 || err.response.status === 403)
+        ) {
           navigate("/login");
         } else {
           setError("Something went wrong fetching admin data.");
@@ -60,25 +67,26 @@ function BlogCard({ darkTheme, card, setCard }) {
 
   return (
     <>
-      {error && (
-        <div className="text-red-500 text-center mb-4">{error}</div>
-      )}
+      {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
       {datas.slice(0, visibleCount).map((item, index) => (
         <React.Fragment key={index}>
           <Link
             to={`/blog/${item._id}`}
             state={{ blog: item }}
-            className={`w-full mb-5  ${card
+            className={`w-full mb-5  ${
+              card
                 ? "xl:w-full lg:flex lg:flex-row lg:items-center"
                 : "xl:w-[30%] flex flex-col"
-              } h-fit`}
+            } h-fit`}
           >
             {/* Image */}
             <div className={`${card ? "lg:w-[45%]" : "w-full"}`}>
               <img
                 src={item.imageUrl}
-                className={`object-cover w-full ${card ? "h-[150px]" : "h-[150px]"} rounded-md`}
+                className={`object-cover w-full ${
+                  card ? "h-[150px]" : "h-[150px]"
+                } rounded-md`}
                 alt={item.tag}
               />
             </div>
@@ -87,7 +95,9 @@ function BlogCard({ darkTheme, card, setCard }) {
             <div className={`${card ? "lg:w-[55%]" : ""}`}>
               <div className="px-5 flex flex-col gap-y-2 py-3">
                 <div
-                  className={`tag flex items-center justify-center w-fit h-5 px-2 py-[2px] ${darkTheme ? "bg-white" : "bg-[#E9E9EB]"} rounded-md text-black`}
+                  className={`tag flex items-center justify-center w-fit h-5 px-2 py-[2px] ${
+                    darkTheme ? "bg-white" : "bg-[#E9E9EB]"
+                  } rounded-md text-black`}
                 >
                   <h1 className="text-[10px]">{item.category}</h1>
                 </div>
@@ -95,7 +105,9 @@ function BlogCard({ darkTheme, card, setCard }) {
                   {item.title}
                 </h1>
                 <p
-                  className={`truncate ${darkTheme ? "text-white" : "text-[#717275]"} text-sm`}
+                  className={`truncate ${
+                    darkTheme ? "text-white" : "text-[#717275]"
+                  } text-sm`}
                 >
                   {item.description}
                 </p>
@@ -107,10 +119,12 @@ function BlogCard({ darkTheme, card, setCard }) {
                     </span>
                   </p>
                   <div
-                    className={`w-[30px] h-[1px] ${darkTheme ? "bg-white" : "bg-black"}`}
+                    className={`w-[30px] h-[1px] ${
+                      darkTheme ? "bg-white" : "bg-black"
+                    }`}
                   />
                   <p>
-                    {new Date(item.date).toLocaleDateString("en-US", {
+                    {new Date(item.createdAt).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
