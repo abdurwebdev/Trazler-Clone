@@ -11,38 +11,61 @@ const { blogValidator } = require("../validators/blogValidator");
 const BlogCard = require("../models/BlogCard");
 const Category = require("../models/Category")
 
-router.post("/register", (req, res) => {
-  let { username, email, password, imageUrl } = registerValidator.parse(
-    req.body
-  );
+router.post("/register", async (req, res) => {
   try {
-    bcrypt.genSalt(10, function (err, salt) {
-      bcrypt.hash(password, salt, async function (err, hash) {
-        await User.create({
-          username,
-          email,
-          password: hash,
-          imageUrl,
-        });
-      });
+    console.log("📥 Incoming register request:", req.body);
+
+    let { username, email, password, imageUrl } = registerValidator.parse(
+      req.body
+    );
+
+    console.log("✅ Validation passed:", { username, email });
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+
+    const newUser = await User.create({
+      username,
+      email,
+      password: hash,
+      imageUrl,
     });
-    res.status(200).json({ message: "Login Successful!" });
+
+    console.log("✅ User created in DB:", newUser);
+
+    res.status(201).json({ message: "Register Successful!" });
   } catch (error) {
+    console.error("❌ Register error:", error);
+
     if (error.name === "ZodError") {
       return res.status(400).json({ errors: error.errors });
     }
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 router.post("/login", async (req, res) => {
-  let { email, password } = loginValidator.parse(req.body);
   try {
+    console.log("📥 Incoming login request:", req.body);
+
+    let { email, password } = loginValidator.parse(req.body);
+    console.log("✅ Validation passed:", email);
+
     let user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Login Failed" });
+    if (!user) {
+      console.warn("❌ No user found with email:", email);
+      return res.status(400).json({ message: "Login Failed" });
+    }
+    console.log("✅ User found:", user.email);
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Login Failed" });
+    console.log("🔑 Password match:", isMatch);
+
+    if (!isMatch) {
+      console.warn("❌ Incorrect password for:", email);
+      return res.status(400).json({ message: "Login Failed" });
+    }
+
     const payload = {
       id: user._id,
       email: user.email,
@@ -50,24 +73,32 @@ router.post("/login", async (req, res) => {
       imageUrl: user.imageUrl,
       posts: user.posts,
     };
+
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+
+    console.log("✅ JWT token created");
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: "36000000",
+      maxAge: 3600000, // 1h
     });
+
     res.status(200).json({ message: "Login Successful!" });
   } catch (error) {
-    if (error.errors === "ZodError") {
+    console.error("❌ Login error:", error);
+
+    if (error.name === "ZodError") {
       return res.status(400).json({ errors: error.errors });
     }
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
 
 router.get("/checkAuth", (req, res) => {
   const token = req.cookies.token;
