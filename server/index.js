@@ -74,4 +74,4 @@ cron.schedule("* * * * *", async () => {
 
 // ---------- export for Vercel ----------
 
-app.listen(3000)
+module.exports = app;
