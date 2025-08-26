@@ -11,6 +11,11 @@ const app = express();
 // Connect DB
 db();
 
+app.get("/", (req, res) => {
+  res.send("API is working 🚀");
+});
+
+
 app.use(cookieParser());
 app.use(
   cors({
