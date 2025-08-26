@@ -71,6 +71,8 @@ cron.schedule("* * * * *", async () => {
     console.error("Error publishing scheduled posts:", error);
   }
 });
-
+app.get("/",(req,res)=>{
+  res.send("Working!")
+})
 // ---------- export for Vercel ----------
 module.exports = serverless(app);
