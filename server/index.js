@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const cron = require("node-cron");
-const serverless = require("serverless-http"); // important for Vercel
 const db = require("./config/connectDB");
 const BlogCard = require("./models/BlogCard");
 const router = require("./routes/router");
@@ -72,5 +71,6 @@ cron.schedule("* * * * *", async () => {
   }
 });
 
-// ---------- export for Vercel ----------
-module.exports = serverless(app);
+app.listen(process.env.PORT,()=>{
+  console.log(`Server running on ${PORT}`)
+})
